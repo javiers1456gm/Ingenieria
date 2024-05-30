@@ -132,7 +132,20 @@ if ($result_clientes) {
         .btn-selected {
             background-color: black !important;
         }
+    
+        body {
+    background-image: url('fondo3.jpg'); /* Cambia 'ruta/a/tu/imagen.jpg' por la ruta de tu imagen */
+    background-size: cover; /* Asegura que la imagen cubra todo el fondo */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    background-attachment: fixed; /* Hace que la imagen de fondo se mantenga fija al hacer scroll */
+}
+
+
+
     </style>
+
+
 </head>
 
 <body>
@@ -140,19 +153,19 @@ if ($result_clientes) {
 <div class="container">
     <div class="row">
         <div class="col-md-7 center-content">
-            <h2 class="text-center">Buscar auto</h2>
+            <h2 class="text-center" style="color:azure">Buscar auto</h2>
             <form action="" method="post" enctype="multipart/form-data"> <!-- Action vacío para enviar los datos del formulario a la misma página -->
                 <!-- Resto del formulario -->
                 <div class="form-group">
-                    <label for="marca">Marca:</label>
+                    <label for="marca" style="color:azure" >Marca:</label>
                     <input type="text" class="form-control" id="marca" name="marca" placeholder="Ingrese la marca del auto">
                 </div>
                 <div class="form-group">
-                    <label for="modelo">Modelo:</label>
+                    <label for="modelo" style="color:azure" >Modelo:</label>
                     <input type="text" class="form-control" id="modelo" name="modelo" placeholder="Ingrese el modelo del auto">
                 </div>
                 <div class="form-group">
-                    <label for="price_range">Rango de precios:</label>
+                    <label for="price_range" style="color:azure" >Rango de precios:</label>
                     <div class="input-group">
                         <input type="number" class="form-control" id="min_price" name="min_price" placeholder="Precio mínimo">
                         <div class="input-group-append">
@@ -162,7 +175,7 @@ if ($result_clientes) {
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="year_range">Rango de años:</label>
+                    <label for="year_range" style="color:azure" >Rango de años:</label>
                     <div class="input-group">
                         <input type="number" class="form-control" id="min_year" name="min_year" placeholder="Año mínimo">
                         <div class="input-group-append">
@@ -244,15 +257,15 @@ if ($result_clientes) {
    <!-- Tabla de clientes (inicialmente oculta) -->
 <div class="row mt-4" id="tablaClientes" style="display: none;">
     <div class="container">
-        <h2 class="mt-5">Buscar y Seleccionar Cliente</h2>
+        <h2 class="mt-5" style="color:azure">Buscar y Seleccionar Cliente</h2>
         <form method="get">
             <div class="form-row">
                 <div class="form-group col-md-4">
-                    <label for="nombre_buscar">Nombre:</label>
+                    <label for="nombre_buscar" style="color:azure">Nombre:</label>
                     <input type="text" class="form-control" id="nombre_buscar" name="nombre">
                 </div>
                 <div class="form-group col-md-4">
-                    <label for="correo_buscar">Correo Electrónico:</label>
+                    <label for="correo_buscar" style="color:azure">Correo Electrónico:</label>
                     <input type="email" class="form-control" id="correo_buscar" name="correo_electronico">
                 </div>
                 <div class="form-group col-md-4">
@@ -394,14 +407,14 @@ if ($result_clientes) {
         <form action="registrar_venta.php" method="post">
             <!-- Mostrar el nombre del usuario -->
             <div class="form-group">
-                <label for="nombre_usuario">Nombre del Usuario:</label>
+                <label for="nombre_usuario" style="color:azure">Nombre del Usuario:</label>
                 <input type="text" class="form-control" id="nombre_usuario" name="nombre_usuario" value="<?php echo isset($_SESSION['nombre_completo']) ? $_SESSION['nombre_completo'] : ''; ?>" readonly>
                 <!-- Campo oculto para almacenar el ID del usuario -->
                 <input type="hidden" id="id_usuario" name="id_usuario" value="<?php echo isset($_SESSION['idUsuarios']) ? $_SESSION['idUsuarios'] : ''; ?>" required>
             </div>
             <!-- Mostrar el nombre del cliente -->
             <div class="form-group">
-                <label for="nombre_cliente">Nombre del Cliente:</label>
+                <label for="nombre_cliente" style="color:azure">Nombre del Cliente:</label>
                 <input type="text" class="form-control" id="nombre_cliente" name="nombre_cliente" readonly>
             </div>
             <!-- Campo oculto para almacenar el ID del cliente -->
@@ -410,19 +423,19 @@ if ($result_clientes) {
             <input type="hidden" id="autos_seleccionados" name="autos_seleccionados">
             <!-- Otros campos del formulario -->
             <div class="form-group">
-                <label for="fecha">Fecha:</label>
+                <label for="fecha" style="color:azure">Fecha:</label>
                 <input type="date" class="form-control" id="fecha" name="fecha" value="<?php echo date('Y-m-d'); ?>" required>
             </div>
             <div class="form-group">
-                <label for="total_venta">Total de la venta:</label>
+                <label for="total_venta" style="color:azure">Total de la venta:</label>
                 <input type="number" class="form-control" id="total_venta" name="total_venta" required>
             </div>
             <div class="form-group">
-                <label for="anticipo">Anticipo:</label>
+                <label for="anticipo" style="color:azure">Anticipo:</label>
                 <input type="number" class="form-control" id="anticipo" name="anticipo" required>
             </div>
             <div class="form-group">
-                <label for="num_pagos">Número de pagos:</label>
+                <label for="num_pagos"style="color:azure" >Número de pagos:</label>
                 <input type="number" class="form-control" id="num_pagos" name="num_pagos" required>
             </div>
             <button type="submit" class="btn btn-primary">Registrar venta</button>

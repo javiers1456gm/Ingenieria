@@ -1,5 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+<style>
+ body {
+    background-image: url('fondo3.jpg'); /* Cambia 'ruta/a/tu/imagen.jpg' por la ruta de tu imagen */
+    background-size: cover; /* Asegura que la imagen cubra todo el fondo */
+    background-position: center; /* Centra la imagen */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    background-attachment: fixed; /* Hace que la imagen de fondo se mantenga fija al hacer scroll */
+    
+}
+
+
+
+</style>
+
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,9 +35,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="cliente">Cliente:</label>
+                        <label for="cliente" style="color: white;" >Cliente:</label>
                         <select class="form-control" id="cliente" name="cliente" required>
-                            <option value="">Selecciona un cliente</option>
+                            <option value="" >Selecciona un cliente</option>
                             <?php
                             // Conexión a la base de datos (debes modificar estos valores según tu configuración)
                             $servername = "localhost";
@@ -56,15 +71,15 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="email">Descripcion:</label>
+                        <label for="email" style="color: white;">Descripcion:</label>
                         <input type="text" class="form-control" id="descripcion" name="descripcion" required placeholder="Ingrese una descripcion">
                     </div>
                     <div class="form-group">
-                        <label for="time">Hora:</label>
+                        <label for="time" style="color: white;">Hora:</label>
                         <input type="time" class="form-control" id="time" name="time" required>
                     </div>
                     <div class="form-group">
-                        <label for="vendedor">Vendedor Disponible:</label>
+                        <label for="vendedor" style="color: white;">Vendedor Disponible:</label>
                         <select class="form-control" id="vendedor" name="vendedor" required>
                             <option value="">Selecciona un vendedor</option>
                             <?php
@@ -115,14 +130,13 @@
                 <br>
                 <br>    
                 <div class="container right">
-                    <div class="row">
+                <?php include 'calendario.php'; ?>   
+                <div class="row">
                         <div class="col-md-8"></div>
                         <div class="col-md-4">
                             <!-- Contenedor en la parte derecha -->
-                            <div class="sidebar">
-                                <!-- Aquí incluimos el calendario -->
-                                <?php include 'calendario.php'; ?>
-                            </div>
+                            
+                         
                         </div>
                     </div>
                 </div>

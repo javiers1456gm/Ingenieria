@@ -16,19 +16,59 @@
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
         crossorigin="anonymous"
     />
+    <style>
+        body {
+            background-color: #f8f9fa; /* Fondo claro para el cuerpo */
+        }
+        .navbar {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra ligera para la barra de navegación */
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+        .nav-link {
+            color: #343a40 !important; /* Color de enlace más oscuro */
+            font-weight: 500; /* Negrita media */
+            padding: 10px 15px; /* Espaciado adicional */
+            border-left: 1px solid #ddd; /* Línea divisoria */
+            transition: background-color 0.3s, color 0.3s; /* Transición suave */
+        }
+        .nav-link:first-child {
+            border-left: none; /* Sin línea divisoria para el primer elemento */
+        }
+        .nav-link:hover {
+            background-color: #e9ecef; /* Fondo claro al pasar el cursor */
+        }
+        .nav-link#logoutBtn {
+            background-color: white;
+            color: #343a40 !important; /* Color de texto más oscuro */
+            border-radius: 5px;
+            margin-left: 10px; /* Separación a la izquierda del botón */
+        }
+        .nav-link#logoutBtn:hover {
+            background-color: #343a40;
+            color: white !important; /* Inversión de colores en hover */
+        }
+        .navbar-toggler {
+            border-color: rgba(255, 255, 255, 0.1); /* Bordes ligeros del botón toggler */
+        }
+    </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+<nav class="navbar navbar-expand-sm navbar-light bg-light">
     <a class="navbar-brand" href="login.php">Auto Shop Administration</a>
-    <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavId" aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation"></button>
+    <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavId" aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
     <div class="collapse navbar-collapse" id="collapsibleNavId">
         <ul class="navbar-nav me-auto mt-2 mt-lg-0">
             <li class="nav-item">
-                <a class="nav-link" href="CRUD citas .php">citas</a>
+                <a class="nav-link" href="CRUD citas .php">Citas</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="buscarAuto.php">buscar</a>
+                <a class="nav-link" href="buscarAuto.php">Buscar</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="registro de ventas.php">Reporte de ventas</a>
