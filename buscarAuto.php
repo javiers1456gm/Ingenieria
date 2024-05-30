@@ -315,55 +315,73 @@ if ($result_clientes) {
 </script>
 
 <script>
-// Agrega un controlador de eventos para el evento submit del formulario
-document.getElementById("formBuscarCliente").addEventListener("submit", function(event) {
-    // Evita que el formulario se envíe de manera predeterminada (recargando la página)
-    event.preventDefault();
+     // Agrega un controlador de eventos para el evento submit del formulario
+     document.getElementById("formBuscarCliente").addEventListener("submit", function(event) {
+        // Evita que el formulario se envíe de manera predeterminada (recargando la página)
+        event.preventDefault();
 
-    // Obtiene los datos del formulario
-    var formData = new FormData(this);
+        // Obtiene los datos del formulario
+        var formData = new FormData(this);
 
-    // Envía una solicitud AJAX al servidor
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", "buscar_clientes.php?" + new URLSearchParams(formData).toString(), true);
-    xhr.onload = function() {
-        if (xhr.status >= 200 && xhr.status < 300) {
-            // Procesa la respuesta del servidor y actualiza la página según sea necesario
-            console.log(xhr.responseText);
+        // Envía una solicitud AJAX al servidor
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "buscar_clientes.php?" + new URLSearchParams(formData).toString(), true);
+        xhr.onload = function() {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                // Procesa la respuesta del servidor y actualiza la página según sea necesario
+                // Por ejemplo, puedes mostrar los resultados de la búsqueda sin recargar la página
+                console.log(xhr.responseText);
 
-            // Supongamos que el servidor devuelve los datos en formato JSON
-            var clientes = JSON.parse(xhr.responseText);
+                // Supongamos que el servidor devuelve los datos en formato JSON
+                var clientes = JSON.parse(xhr.responseText);
 
-            // Selecciona el contenedor de resultados
-            var resultadosClientes = document.getElementById("resultadosClientes");
+                // Selecciona el cuerpo de la tabla
+                var tbody = document.querySelector("#tablaClientes tbody");
 
-            // Construye la tabla de resultados
-            var tablaHTML = "<table>";
-            tablaHTML += "<tr><th>Nombre</th><th>Apellido Paterno</th><th>Apellido Materno</th><th>Correo Electrónico</th><th>Teléfono</th><th>Domicilio</th></tr>";
-            clientes.forEach(function(cliente) {
-                tablaHTML += "<tr>";
-                tablaHTML += "<td>" + cliente.nombre_cliente + "</td>";
-                tablaHTML += "<td>" + cliente.apellido_paterno_cl + "</td>";
-                tablaHTML += "<td>" + cliente.apellido_materno_cl + "</td>";
-                tablaHTML += "<td>" + cliente.correo_electronico + "</td>";
-                tablaHTML += "<td>" + cliente.telefono + "</td>";
-                tablaHTML += "<td>" + cliente.domicilio + "</td>";
-                tablaHTML += "</tr>";
-            });
-            tablaHTML += "</table>";
+                // Vacía el contenido actual del cuerpo de la tabla
+                tbody.innerHTML = "";
 
-            // Inserta la tabla en el contenedor de resultados
-            resultadosClientes.innerHTML = tablaHTML;
-        } else {
-            console.error("Error al buscar cliente:", xhr.statusText);
-        }
-    };
-    xhr.onerror = function() {
-        console.error("Error de red al buscar cliente.");
-    };
-    xhr.send();
-});
+                // Itera sobre los datos de los clientes y crea nuevas filas para la tabla
+                clientes.forEach(function(cliente) {
+                    var row = document.createElement("tr");
 
+                    row.innerHTML = `
+                        <td>${cliente.nombre_cliente}</td>
+                        <td>${cliente.apellido_paterno_cl}</td>
+                        <td>${cliente.apellido_materno_cl}</td>
+                        <td>${cliente.correo_electronico}</td>
+                        <td>${cliente.telefono}</td>
+                        <td>${cliente.domicilio}</td>
+                        <td>
+                            <form method="post" style="display: inline;">
+                                <input type="hidden" name="cliente_id" value="${cliente.idClientes}">
+                                <button type="button" class="btn btn-primary seleccionar-cliente">Seleccionar</button>
+                            </form>
+                        </td>
+                    `;
+
+                    tbody.appendChild(row);
+                });
+
+                // Añadir nuevamente los eventos de clic a los botones de selección de cliente
+                document.querySelectorAll('.seleccionar-cliente').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const clienteId = this.parentNode.querySelector('input[name="cliente_id"]').value;
+                        const nombreCliente = this.closest('tr').querySelector('td:first-child').textContent;
+                        document.getElementById('id_cliente').value = clienteId;
+                        document.getElementById('nombre_cliente').value = nombreCliente;
+                        console.log('Cliente seleccionado:', nombreCliente);
+                    });
+                });
+            } else {
+                console.error("Error al buscar cliente:", xhr.statusText);
+            }
+        };
+        xhr.onerror = function() {
+            console.error("Error de red al buscar cliente.");
+        };
+        xhr.send();
+    });
 </script>
 
 

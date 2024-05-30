@@ -35,7 +35,7 @@ require 'navBar.php';
         <!-- Contenedor izquierdo con los inputs -->
         <div class="col-md-6">
             <h2 class="text-center">Pago auto</h2>
-            <form action="registro_de_pagos.php" method="post" enctype="multipart/form-data">
+            <form action="registro de pagos.php" method="post" enctype="multipart/form-data">
                 <br>
                 <div class="form-group">
                     <label for="dueno">Nombre del dueño:</label>
@@ -115,6 +115,8 @@ require 'navBar.php';
         </div>
     </div>
 </div>
+<!-- Contenedor para mostrar las alertas -->
+<div id="alert-container"></div>
 
 <!-- Bootstrap JavaScript Libraries -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
@@ -142,7 +144,7 @@ require 'navBar.php';
                     autoSelect.innerHTML = ''; // Limpiar opciones anteriores
                     autos.forEach(function(auto) {
                         var option = document.createElement('option');
-                        option.value = auto.idpagos;
+                        option.value = auto.idventas;
                         // Concatenar la marca, modelo, precio y año del auto para mostrar en el combobox
                         option.textContent = auto.marca + ' ' + auto.modelo + ' ' + auto.precio + ' ' + auto.anio;
                         autoSelect.appendChild(option);
@@ -212,44 +214,51 @@ require 'navBar.php';
         });
     });
 
-    document.getElementById('btn-pagar').addEventListener('click', function () {
-        // Obtener los datos del formulario
-        var dueno = document.getElementById('dueno').value;
-        var auto = document.getElementById('auto').value;
-        var pago = document.getElementById('pago').value;
-        var fecha = document.getElementById('fecha').value;
+   // Después de la función buscarAutos()
+document.getElementById('btn-pagar').addEventListener('click', function () {
+    // Obtener los datos del formulario
+    var dueno = document.getElementById('dueno').value;
+    var auto = document.getElementById('auto').value;
+    var pago = document.getElementById('pago').value;
+    var fecha = document.getElementById('fecha').value;
 
-        // Verificar si el campo "Auto" tiene un valor seleccionado
-        if (auto.trim() === '') {
-            console.log("Por favor, seleccione un auto.");
-            return; // Salir de la función si el campo "Auto" está vacío
-        }
+    // Verificar si el campo "Auto" tiene un valor seleccionado
+    if (auto.trim() === '') {
+        console.log("Por favor, seleccione un auto.");
+        return; // Salir de la función si el campo "Auto" está vacío
+    }
 
-        // Mostrar los datos por consola
-        console.log("Datos del formulario:");
-        console.log("Dueño:", dueno);
-        console.log("Auto:", auto);
-        console.log("Pago:", pago);
-        console.log("Fecha:", fecha);
+    // Crear un objeto FormData solo con los datos del auto seleccionado
+    var formData = new FormData();
+    formData.append('dueno', dueno);
+    formData.append('auto', auto);
+    formData.append('pago', pago);
+    formData.append('fecha', fecha);
 
-        // Crear un objeto FormData solo con los datos del auto seleccionado
-        var formData = new FormData();
-        formData.append('dueno', dueno);
-        formData.append('auto', auto);
-        formData.append('pago', pago);
-        formData.append('fecha', fecha);
+    // Realizar la solicitud AJAX para registrar el pago
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            // Parsear la respuesta JSON del servidor
+            var response = JSON.parse(this.responseText);
 
-        // Realizar la solicitud AJAX para registrar el pago
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                // Mostrar la respuesta del servidor (puedes hacer algo más si lo deseas)
-                console.log(this.responseText);
+            // Verificar si hay alertas para mostrar
+            if (response.length > 0) {
+                // Mostrar las alertas en un elemento específico de tu página
+                var alertContainer = document.getElementById('alert-container');
+                alertContainer.innerHTML = ''; // Limpiar alertas anteriores
+                response.forEach(function(alert) {
+                    alertContainer.innerHTML += '<div class="alert alert-danger">' + alert + '</div>';
+                });
+            } else {
+                // La operación se realizó correctamente, puedes hacer algo más si lo deseas
+                console.log("El pago se registró correctamente.");
             }
-        };
-        xhttp.open("POST", "registrar_pago.php", true);
-        xhttp.send(formData);
-    });
+        }
+    };
+    xhttp.open("POST", "registrar_pago.php", true);
+    xhttp.send(formData);
+});
 
     // Función para cargar la tabla de ventas
     function loadVentasTable() {

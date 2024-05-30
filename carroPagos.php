@@ -15,34 +15,54 @@
     <div class="container mt-5">
         <h2>Pago De Autos</h2>
         <!-- Formulario de registro de venta -->
-        <form method="POST" action="registrar_venta.php">
-            <div class="form-group">
-                <label for="idautos">Autos:</label>
-                <select class="form-control" id="idautos" name="idautos[]" multiple required onchange="calcularTotal()">
-                    <?php
-                    // Conectar a la base de datos y obtener los autos disponibles
-                    $servername = "localhost";
-                    $username = "root";
-                    $password = "";
-                    $dbname = "autoshop";
+        <form id="registroVentaForm" method="POST" action="registrar_venta.php">
+            <div class="row">
+                <?php
+                $servername = "localhost";
+                $username = "root";
+                $password = "12345678";
+                $dbname = "autoshop";
 
-                    $conn = new mysqli($servername, $username, $password, $dbname);
+                $conn = new mysqli($servername, $username, $password, $dbname);
 
-                    if ($conn->connect_error) {
-                        die("La conexión ha fallado: " . $conn->connect_error);
-                    }
+                if ($conn->connect_error) {
+                    die("La conexión ha fallado: " . $conn->connect_error);
+                }
 
-                    $sql_autos = "SELECT idautos, marca, modelo, precio FROM autos";
+                if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                    $autos_seleccionados = $_POST['autos_seleccionados'];
+                    $ids_autos_str = implode(",", $autos_seleccionados);
+
+                    $sql_autos = "SELECT idautos, marca, modelo, precio FROM autos WHERE idautos IN ($ids_autos_str)";
                     $result_autos = $conn->query($sql_autos);
 
                     if ($result_autos->num_rows > 0) {
                         while ($row_auto = $result_autos->fetch_assoc()) {
-                            echo "<option value='" . $row_auto["idautos"] . "' data-precio='" . $row_auto["precio"] . "'>" . $row_auto["marca"] . " " . $row_auto["modelo"] . " - $" . $row_auto["precio"] . "</option>";
+                            ?>
+                            <div class="col-md-4 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><?php echo $row_auto["marca"] . " " . $row_auto["modelo"]; ?></h5>
+                                        <p class="card-text">Precio: $<?php echo $row_auto["precio"]; ?></p>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="idautos[]" value="<?php echo $row_auto["idautos"]; ?>" id="auto_<?php echo $row_auto["idautos"]; ?>" checked>
+                                            <label class="form-check-label" for="auto_<?php echo $row_auto["idautos"]; ?>">
+                                                Seleccionar
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php
                         }
                     }
-                    ?>
-                </select>
+                }
+                ?>
             </div>
+            <!-- Agrega un campo oculto para enviar los IDs de los autos seleccionados -->
+            <?php foreach ($autos_seleccionados as $auto_id) { ?>
+                <input type="hidden" name="autos_seleccionados[]" value="<?php echo $auto_id; ?>">
+            <?php } ?>
             <div class="form-group">
                 <label for="cantidad_pagos">Cantidad de Pagos:</label>
                 <input type="number" class="form-control" id="cantidad_pagos" name="cantidad_pagos" required placeholder="Ingrese la cantidad de pagos">
@@ -53,7 +73,6 @@
                     <option value="">Seleccionar Tipo de Pago</option>
                     <option value="Efectivo">Efectivo</option>
                     <option value="Tarjeta">Tarjeta</option>
-                    <!-- Agrega más opciones si es necesario -->
                 </select>
             </div>
             <div class="form-group">
@@ -70,7 +89,7 @@
             </div>
 
             <div class="text-center mt-3">
-                <button type="submit" class="btn btn-dark">Registrar Venta</button>
+                <button id="venta-autos" type="button" class="btn btn-dark">Registrar Venta</button>
             </div>
         </form>
     </div>
@@ -80,56 +99,15 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
-        // Función para calcular el total a pagar en tiempo real
-        function calcularTotal() {
-            var autosSeleccionados = document.getElementById("idautos").selectedOptions;
-            var total = 0;
+        // Evento al hacer clic en "Venta De Auto(s)"
+        document.getElementById('venta-autos').addEventListener('click', function(event) {
+            event.preventDefault(); // Evita el comportamiento predeterminado del botón
 
-            for (var i = 0; i < autosSeleccionados.length; i++) {
-                total += parseFloat(autosSeleccionados[i].getAttribute("data-precio"));
-            }
-
-            document.getElementById("total_pagar").value = total.toFixed(2);
-        }
+            // Envía el formulario de registro de venta
+            document.getElementById('registroVentaForm').submit();
+        });
     </script>
 
 </body>
 
 </html>
-
-<?php
-// Verificar si se recibieron datos del formulario
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Conectar a la base de datos
-    $servername = "localhost";
-    $username = "root";
-    $password = "12345678";
-    $dbname = "autoshop";
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    // Verificar la conexión
-    if ($conn->connect_error) {
-        die("La conexión ha fallado: " . $conn->connect_error);
-    }
-
-    // Obtener los datos del formulario
-    $idautos = $_POST['idautos'];
-    $fecha_pago = $_POST['fecha_pago'];
-    $monto_pago = $_POST['monto_pago'];
-    $tipo_pago = $_POST['tipo_pago'];
-    $cantidad_pagos = $_POST['cantidad_pagos'];
-
-    // Preparar y ejecutar la consulta SQL para insertar la venta en la tabla pagos
-    $sql = "INSERT INTO pagos (idautos, fecha_pago, monto_pago, tipo_pago, cantidad_pagos) VALUES ('$idautos', '$fecha_pago', '$monto_pago', '$tipo_pago', '$cantidad_pagos')";
-
-    if ($conn->query($sql) === TRUE) {
-        echo "La venta se registró correctamente.";
-    } else {
-        echo "Error al registrar la venta: " . $conn->error;
-    }
-
-    // Cerrar la conexión a la base de datos
-    $conn->close();
-}
-?>

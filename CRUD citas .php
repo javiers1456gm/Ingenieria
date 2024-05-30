@@ -1,6 +1,3 @@
-<?php
-    session_start();
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,7 +24,6 @@
                         <select class="form-control" id="cliente" name="cliente" required>
                             <option value="">Selecciona un cliente</option>
                             <?php
-                            
                             // Conexión a la base de datos (debes modificar estos valores según tu configuración)
                             $servername = "localhost";
                             $username = "root";
@@ -75,7 +71,7 @@
                             // Conexión a la base de datos (debes modificar estos valores según tu configuración)
                             $servername = "localhost";
                             $username = "root";
-                            $password = "";
+                            $password = "12345678";
                             $dbname = "autoshop";
 
                             // Crear conexión
@@ -87,13 +83,13 @@
                             }
 
                             // Consulta SQL para obtener los vendedores de la base de datos
-                            $sql = "SELECT idUsuarios, nombre_vendedor,apellido_paterno,apellido_materno FROM Usuarios";
+                            $sql = "SELECT idUsuarios, nombre_vendedor FROM Usuarios";
                             $result = $conn->query($sql);
 
                             // Generar opciones para el combobox
                             if ($result->num_rows > 0) {
                                 while($row = $result->fetch_assoc()) {
-                                    echo "<option value='" . $row["idUsuarios"] . "'>" . $row["nombre_vendedor"] . " " . $row["apellido_paterno"] . " " . $row["apellido_materno"] . "</option>";
+                                    echo "<option value='" . $row["idUsuarios"] . "'>" . $row["nombre_vendedor"] . "</option>";
                                 }
                             }
 
@@ -165,7 +161,6 @@
         function eliminarCita() {
             // Obtener el nombre del cliente
             var cliente = document.getElementById("cliente").value;
-            console.log(cliente);
 
             // Establecer el valor del campo oculto "delete"
             document.querySelector("input[name='delete']").value = "true";

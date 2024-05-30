@@ -1,6 +1,3 @@
-<?php
-    session_start();
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -95,29 +92,26 @@ $result = $conn->query($sql);
       <div class="list-group">
         <?php
         // Consulta SQL para obtener los usuarios existentes
-        // Consulta SQL para obtener los usuarios existentes
-$sql_usuarios = "SELECT idUsuarios, CONCAT(nombre_vendedor , ' ', apellido_paterno, ' ', apellido_materno) AS nombre_completo, roles.nombre_rol, foto FROM usuarios JOIN roles ON usuarios.idroles = roles.idroles";
+        $sql_usuarios = "SELECT idUsuarios, nombre_vendedor, roles.nombre_rol, foto FROM usuarios JOIN roles ON usuarios.idroles = roles.idroles";
+        $result_usuarios = $conn->query($sql_usuarios);
 
-$result_usuarios = $conn->query($sql_usuarios);
-
-if ($result_usuarios->num_rows > 0) {
-    while($row_usuario = $result_usuarios->fetch_assoc()) {
-        echo "<div class='list-group-item'>";
-        echo "<h5 class='mb-1'>" . $row_usuario["nombre_completo"] . "</h5>";
-        echo "<p class='mb-1'>Rol: " . $row_usuario["nombre_rol"] . "</p>";
-        echo "<img src='" . $row_usuario["foto"] . "' class='rounded-circle' alt='Foto de perfil' width='50'>";
-        echo "<form class='d-inline' method='post' action='EliminarUsuarios.php'>";
-        echo "<input type='hidden' name='idUsuario' value='" . $row_usuario["idUsuarios"] . "'>";
-        echo "<input type='hidden' name='delete' value='true'>"; // Agregado para indicar que es una solicitud de eliminación
-        echo "<button type='submit' class='btn btn-danger btn-sm mr-2'>Eliminar</button>";
-        echo "</form>";
-        echo "<button class='btn btn-primary btn-sm' onclick='actualizarUsuario(" . $row_usuario["idUsuarios"] . ")'>Actualizar</button>";
-        echo "</div>";
-    }
-} else {
-    echo "<p>No se encontraron usuarios.</p>";
-}
-
+        if ($result_usuarios->num_rows > 0) {
+            while($row_usuario = $result_usuarios->fetch_assoc()) {
+                echo "<div class='list-group-item'>";
+                echo "<h5 class='mb-1'>" . $row_usuario["nombre_vendedor"] . "</h5>";
+                echo "<p class='mb-1'>Rol: " . $row_usuario["nombre_rol"] . "</p>";
+                echo "<img src='" . $row_usuario["foto"] . "' class='rounded-circle' alt='Foto de perfil' width='50'>";
+                echo "<form class='d-inline' method='post' action='EliminarUsuarios.php'>";
+                echo "<input type='hidden' name='idUsuario' value='" . $row_usuario["idUsuarios"] . "'>";
+                echo "<input type='hidden' name='delete' value='true'>"; // Agregado para indicar que es una solicitud de eliminación
+                echo "<button type='submit' class='btn btn-danger btn-sm mr-2'>Eliminar</button>";
+                echo "</form>";
+                echo "<button class='btn btn-primary btn-sm' onclick='actualizarUsuario(" . $row_usuario["idUsuarios"] . ")'>Actualizar</button>";
+                echo "</div>";
+            }
+        } else {
+            echo "<p>No se encontraron usuarios.</p>";
+        }
         ?>
       </div>
     </div>

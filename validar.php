@@ -14,7 +14,7 @@ if (!$conn) {
 }
 
 // Consulta preparada para evitar la inyección de SQL
-$consulta = "SELECT idUsuarios, nombre_vendedor, contrasena FROM usuarios WHERE nombre_vendedor=?";
+$consulta = "SELECT idUsuarios, nombre_vendedor, apellido_paterno, apellido_materno, contrasena FROM usuarios WHERE nombre_vendedor=?";
 $stmt = mysqli_prepare($conn, $consulta);
 mysqli_stmt_bind_param($stmt, "s", $nombre_usuario);
 mysqli_stmt_execute($stmt);
@@ -22,17 +22,20 @@ mysqli_stmt_store_result($stmt);
 
 // Verificar si se encontraron filas
 if (mysqli_stmt_num_rows($stmt) > 0) {
-    mysqli_stmt_bind_result($stmt, $id_usuario, $nombre_vendedor, $contrasena_hash);
+    mysqli_stmt_bind_result($stmt, $id_usuario, $nombre_vendedor, $apellido_paterno, $apellido_materno, $contrasena_hash);
 
     // Iterar sobre los resultados
     while (mysqli_stmt_fetch($stmt)) {
         // Verificar la contraseña utilizando password_verify
         if (password_verify($contrasena, $contrasena_hash)) {
-            // Guardar el ID de usuario en la sesión
+            // Construir el nombre completo del usuario
+            $nombre_completo = $nombre_vendedor . " " . $apellido_paterno . " " . $apellido_materno;
+
+            // Guardar el ID de usuario y el nombre completo en la sesión
             $_SESSION['idUsuarios'] = $id_usuario;
-            $_SESSION['nombre'] = $nombre_vendedor; // Guardar el nombre de usuario en la sesión si es necesario
+            $_SESSION['nombre_completo'] = $nombre_completo; // Guardar el nombre completo del usuario en la sesión
             
-            // Redireccionar a la página CRUD de citas.php
+            // Redireccionar a la página buscarAuto.php
             header("Location: buscarAuto.php");
             exit; // Asegurarse de que el script se detenga después de la redirección
         }
@@ -51,7 +54,3 @@ if (mysqli_stmt_num_rows($stmt) > 0) {
 mysqli_stmt_close($stmt);
 mysqli_close($conn);
 ?>
-
-
-
-

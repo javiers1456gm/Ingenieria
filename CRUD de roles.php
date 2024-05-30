@@ -1,6 +1,3 @@
-<?php
-    session_start();
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -25,6 +22,7 @@
     <div class="container mt-5">
         <h2>CRUD de Roles</h2>
 
+ 
 <?php
 // Conexión a la base de datos
 $conn = new mysqli("localhost", "root", "", "autoshop");
@@ -44,31 +42,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $nombre = $_POST["nombre"];
             $descripcion = $_POST["descripcion"];
             $estatus = "Activo"; // Por defecto, se agrega con estatus activo
-            
-            // Consulta para verificar si ya existe un rol con el mismo nombre
-            $sql_check_duplicate = "SELECT idroles FROM roles WHERE nombre_rol = ?";
-            $stmt_check_duplicate = $conn->prepare($sql_check_duplicate);
-            $stmt_check_duplicate->bind_param("s", $nombre);
-            $stmt_check_duplicate->execute();
-            $result_check_duplicate = $stmt_check_duplicate->get_result();
-            
-            // Verificar si se encontró algún resultado
-            if ($result_check_duplicate->num_rows > 0) {
-                // Si ya existe un rol con el mismo nombre, mostrar un mensaje de error
-                $_SESSION['alerta'] = "Ya existe un rol con el mismo nombre.";
-            } else {
-                // Si no existe un rol con el mismo nombre, proceder con la inserción
-                $sql_insert = "INSERT INTO roles (nombre_rol, descripcion_rol, estatus_rol) VALUES (?, ?, ?)";
-                $stmt_insert = $conn->prepare($sql_insert);
-                $stmt_insert->bind_param("sss", $nombre, $descripcion, $estatus);
-                if ($stmt_insert->execute()) {
-                    $_SESSION['alerta'] = "El rol se ha agregado correctamente.";
-                } else {
-                    $_SESSION['alerta'] = "Error al agregar el rol: " . $conn->error;
-                }
-                $stmt_insert->close();
-            }
-            $stmt_check_duplicate->close();
+            $sql = "INSERT INTO roles (nombre_rol, descripcion_rol, estatus_rol) VALUES (?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("sss", $nombre, $descripcion, $estatus);
+            $stmt->execute();
+            $stmt->close();
         } elseif ($accion == "modificar") {
             // Lógica para modificar un rol existente
             $nombre = $_POST["nombre"];
@@ -101,40 +79,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->close();
         } elseif ($accion == "borrar") {
             // Lógica para borrar un rol existente
-            if (isset($_POST["rol_id"])) { // Verificar si se envió el ID del rol
-                $id_rol = $_POST["rol_id"];
-
-                // Verificar si el rol está en uso (por ejemplo, asociado a algún usuario)
-                $sql_check_usage = "SELECT COUNT(*) as count FROM usuarios WHERE idroles = ?";
-                $stmt_check_usage = $conn->prepare($sql_check_usage);
-                $stmt_check_usage->bind_param("i", $id_rol);
-                $stmt_check_usage->execute();
-                $result_check_usage = $stmt_check_usage->get_result();
-                $usage_count = $result_check_usage->fetch_assoc()['count'];
-
-                if ($usage_count > 0) {
-                    // Si el rol está en uso, establece un mensaje de alerta y no ejecutes la consulta de eliminación
-                    $_SESSION['alerta'] = "El rol está en uso y no se puede eliminar.";
-                } else {
-                    // Si el rol no está en uso, procede con la eliminación
+            if (isset($_POST["nombre"])) { // Verificar si se envió el nombre del rol
+                $nombre = $_POST["nombre"];
+                // Realizar una consulta para obtener el ID del rol basado en el nombre proporcionado
+                $sql = "SELECT idroles FROM roles WHERE nombre_rol = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("s", $nombre);
+                $stmt->execute();
+                $result = $stmt->get_result();
+        
+                // Verificar si se encontró un resultado
+                if ($result->num_rows > 0) {
+                    // Obtener el ID del rol
+                    $row = $result->fetch_assoc();
+                    $id_rol = $row['idroles'];
+        
+                    // Usar el ID del rol para borrar el registro en la base de datos
                     $sql_delete = "DELETE FROM roles WHERE idroles=?";
                     $stmt_delete = $conn->prepare($sql_delete);
                     $stmt_delete->bind_param("i", $id_rol);
-                    if ($stmt_delete->execute()) {
-                        $_SESSION['alerta'] = "El rol con ID $id_rol se ha borrado correctamente.";
-                    } else {
-                        $_SESSION['alerta'] = "Error al borrar el rol: " . $conn->error;
-                    }
+                    $stmt_delete->execute();
                     $stmt_delete->close();
+                    echo "El rol con ID $id_rol se ha borrado correctamente.";
+                } else {
+                    echo "No se encontró ningún rol con el nombre proporcionado.";
                 }
+        
+                $stmt->close();
             } else {
-                $_SESSION['alerta'] = "No se pudo borrar el rol. Falta el ID del rol.";
+                echo "No se pudo borrar el rol. Falta el nombre del rol.";
             }
         }
-        
     }
 }
 ?>
+
+
 
 <form method="post">
     <?php if (isset($_GET["edit"])) : ?>
@@ -152,7 +132,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <div class="mb-3">
         <!-- Tabla para mostrar los roles disponibles -->
-        <div class="mb-5">
+<div class="mb-5">
             <br>
             <h3>Roles Disponibles</h3>
             <br>
@@ -167,7 +147,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <tbody>
                     <?php
                     // Conexión a la base de datos y consulta para obtener los roles
-                    $conn = new mysqli("localhost", "root", "", "autoshop");
+                    $conn = new mysqli("localhost", "root", "12345678", "autoshop");
                     if ($conn->connect_error) {
                         die("Conexión fallida: " . $conn->connect_error);
                     }
@@ -194,11 +174,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
     </div>
 
-    <!-- Agrega el campo oculto para almacenar el ID del rol -->
-    <input type="hidden" id="rol_id" name="rol_id" value="">
-    <button type="submit" name="accion" value="agregar" class="btn btn-dark">Agregar Rol</button>
-    <button type="submit" name="accion" value="modificar" class="btn btn-dark">Modificar Rol</button>
-    <button type="submit" name="accion" value="borrar" class="btn btn-dark">Borrar Rol</button>
+        <!-- Agrega el campo oculto para almacenar el nombre del rol -->
+        <input type="hidden" name="nombre_rol" value="<?php echo isset($_GET["edit"]) ? $_GET["edit"] : ""; ?>">
+        <button type="submit" name="accion" value="agregar" class="btn btn-dark">Agregar Rol</button>
+        <button type="submit" name="accion" value="modificar" class="btn btn-dark">Modificar Rol</button>
+        <button type="submit" name="accion" value="borrar" class="btn btn-dark">Borrar Rol</button>
+    </div>
 </form>
 <script>
     function rellenarCampos(id) {
@@ -208,8 +189,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 var rol = JSON.parse(this.responseText);
                 document.getElementById("nombre").value = rol.nombre_rol;
                 document.getElementById("descripcion").value = rol.descripcion_rol;
-                document.getElementById("rol_id").value = id; // Establecer el valor del ID del rol
-                console.log(id);
             }
         };
         xhttp.open("GET", "obtener_rol.php?id=" + id, true);
@@ -217,13 +196,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 </script>
 
-<?php
-// Mostrar la alerta si está seteada
-if (isset($_SESSION['alerta'])) {
-    echo '<div class="alert alert-danger" role="alert">' . $_SESSION['alerta'] . '</div>';
-    unset($_SESSION['alerta']); // Limpiar la alerta después de mostrarla
-}
-?>
 
     </div>
     <!-- Bootstrap JavaScript Libraries -->

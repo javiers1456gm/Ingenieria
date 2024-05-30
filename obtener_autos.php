@@ -11,11 +11,10 @@ if ($dueno !== null) {
     }
 
     // Preparar la consulta SQL con parámetros para evitar la inyección de SQL
-    $sql = "SELECT pagos.idpagos, autos.marca, autos.modelo, autos.precio, autos.anio
-    FROM autos
-    INNER JOIN articulo ON autos.idautos = articulo.idautos
-    INNER JOIN ventas ON ventas.idventas = articulo.idventas
-    INNER JOIN pagos ON ventas.idventas=pagos.idventas
+    $sql = "SELECT ventas.idventas, autos.marca, autos.modelo, autos.precio, autos.anio
+    FROM ventas
+    INNER JOIN articulo ON ventas.idventas = articulo.idventas
+    INNER JOIN autos ON autos.idautos = articulo.idautos
     INNER JOIN clientes ON clientes.idClientes = ventas.idClientes
     WHERE clientes.nombre_cliente = ?";
     

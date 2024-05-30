@@ -1,14 +1,18 @@
 <?php
-if (isset($_POST['cliente']) && isset($_POST['delete'])) {
-    $cliente_id = $_POST['cliente']; // Obtener el ID del cliente
+// Verificar si se ha enviado el nombre del registro a eliminar y si 'delete' está definido
+if (isset($_POST['name']) && !empty($_POST['name']) && isset($_POST['delete'])) {
+    // Obtener el nombre del registro a eliminar
+    $nombre = isset($_POST["name"]) ? $_POST["name"] : ''; 
+
+    // Obtener el valor de 'delete'
     $delete = $_POST['delete'];
 
     if ($delete == "true") {
         // Establecer los detalles de la conexión a la base de datos
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "autoshop";
+        $servername = "localhost"; // Cambia esto por tu servidor de MySQL
+        $username = "root"; // Cambia esto por tu nombre de usuario de MySQL
+        $password = ""; // Cambia esto por tu contraseña de MySQL
+        $dbname = "autoshop"; // Cambia esto por el nombre de tu base de datos
 
         // Crear una conexión
         $conn = new mysqli($servername, $username, $password, $dbname);
@@ -18,8 +22,8 @@ if (isset($_POST['cliente']) && isset($_POST['delete'])) {
             die("La conexión ha fallado: " . $conn->connect_error);
         }
 
-        // Consulta SQL para eliminar la cita basada en el ID del cliente
-        $sql = "DELETE FROM citas WHERE idClientes = '$cliente_id'";
+        // Consulta SQL para eliminar el registro
+        $sql = "DELETE FROM citas WHERE idClientes = (SELECT idClientes FROM clientes WHERE nombre_cliente = '$nombre')";
 
         // Ejecutar la consulta
         if ($conn->query($sql) === TRUE) {
@@ -32,6 +36,6 @@ if (isset($_POST['cliente']) && isset($_POST['delete'])) {
         $conn->close();
     }
 } else {
-    echo "Error: No se han proporcionado todos los datos necesarios para eliminar la cita.";
+    echo "Error: No se ha proporcionado el nombre del registro a eliminar o el campo 'delete' no está definido.";
 }
 ?>

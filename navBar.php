@@ -43,11 +43,12 @@
                 <a class="nav-link" href="CRUDusuarios.php">Usuarios</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="CRUD Registroautos4.php">Registro de autos</a>
+                <a class="nav-link" href="registroclientes.php">Registro de clientes</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="carroPagos.php">Compra De Auto(s)</a>
+                <a class="nav-link" href="CRUD Registroautos4.php">Registro de autos</a>
             </li>
+            
             <!-- Agregar un botón de cierre de sesión -->
             <li class="nav-item">
                 <a class="nav-link" href="#" id="logoutBtn">Cerrar Sesión</a>
