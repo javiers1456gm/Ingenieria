@@ -71,7 +71,7 @@
                             // Conexión a la base de datos (debes modificar estos valores según tu configuración)
                             $servername = "localhost";
                             $username = "root";
-                            $password = "12345678";
+                            $password = "";
                             $dbname = "autoshop";
 
                             // Crear conexión

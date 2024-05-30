@@ -147,7 +147,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <tbody>
                     <?php
                     // Conexión a la base de datos y consulta para obtener los roles
-                    $conn = new mysqli("localhost", "root", "12345678", "autoshop");
+                    $conn = new mysqli("localhost", "root", "", "autoshop");
                     if ($conn->connect_error) {
                         die("Conexión fallida: " . $conn->connect_error);
                     }
