@@ -34,7 +34,7 @@
         <h2>CRUD de Roles</h2>
 
  
-<?php
+        <?php
 // Conexión a la base de datos
 $conn = new mysqli("localhost", "root", "", "autoshop");
 
@@ -52,12 +52,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Lógica para agregar un nuevo rol
             $nombre = $_POST["nombre"];
             $descripcion = $_POST["descripcion"];
-            $estatus = "Activo"; // Por defecto, se agrega con estatus activo
-            $sql = "INSERT INTO roles (nombre_rol, descripcion_rol, estatus_rol) VALUES (?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sss", $nombre, $descripcion, $estatus);
-            $stmt->execute();
-            $stmt->close();
+
+            // Verificar si el rol ya existe en la base de datos
+            $sql_check = "SELECT * FROM roles WHERE nombre_rol = ?";
+            $stmt_check = $conn->prepare($sql_check);
+            $stmt_check->bind_param("s", $nombre);
+            $stmt_check->execute();
+            $result_check = $stmt_check->get_result();
+
+            if ($result_check->num_rows > 0) {
+                // El rol ya existe, mostrar un mensaje de error
+                echo "El rol '$nombre' ya existe en la base de datos.";
+            } else {
+                // El rol no existe, proceder a agregarlo
+                $estatus = "Activo"; // Por defecto, se agrega con estatus activo
+                $sql = "INSERT INTO roles (nombre_rol, descripcion_rol, estatus_rol) VALUES (?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("sss", $nombre, $descripcion, $estatus);
+                $stmt->execute();
+                $stmt->close();
+                echo "El rol '$nombre' se ha agregado correctamente.";
+            }
+            $stmt_check->close();
         } elseif ($accion == "modificar") {
             // Lógica para modificar un rol existente
             $nombre = $_POST["nombre"];

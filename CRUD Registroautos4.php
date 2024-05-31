@@ -8,13 +8,13 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <style>
-     body {
-    background-image: url('fondo3.jpg'); /* Cambia 'ruta/a/tu/imagen.jpg' por la ruta de tu imagen */
-    background-size: cover; /* Asegura que la imagen cubra todo el fondo */
-    background-position: center; /* Centra la imagen */
-    background-repeat: no-repeat; /* Evita que la imagen se repita */
-    background-attachment: fixed; /* Hace que la imagen de fondo se mantenga fija al hacer scroll */
-}
+    body {
+        background-image: url('fondo3.jpg'); /* Cambia 'ruta/a/tu/imagen.jpg' por la ruta de tu imagen */
+        background-size: cover; /* Asegura que la imagen cubra todo el fondo */
+        background-position: center; /* Centra la imagen */
+        background-repeat: no-repeat; /* Evita que la imagen se repita */
+        background-attachment: fixed; /* Hace que la imagen de fondo se mantenga fija al hacer scroll */
+    }
 </style>
 
 <body>
@@ -93,13 +93,11 @@
             </div>
 
             <div class="form-group">
-    <div class="custom-file">
-        <input type="file" class="custom-file-input" id="archivo" name="archivos[]" multiple>
-        <label class="custom-file-label" for="archivo">Seleccionar archivos</label>
-    </div>
-</div>
-
-
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="archivo" name="archivos[]" multiple>
+                    <label class="custom-file-label" for="archivo">Seleccionar archivos</label>
+                </div>
+            </div>
 
             <div class="text-center mt-3">
                 <button type="submit" class="btn btn-dark">Registrar</button>
@@ -111,61 +109,64 @@
     <!-- Lista de autos existentes -->
     <div class="mt-5 text-center">
         <h3>Autos Existentes</h3>
-        <ul class="list-group mx-auto" style="width: fit-content;">
-        <?php
-        // Consulta SQL para obtener los autos existentes junto con sus fotos
-        $sql_autos = "SELECT 
-            autos.idautos,
-            autos.idtipoconcesion,
-            autos.iddueno,
-            autos.matricula,
-            autos.marca,
-            autos.modelo,
-            autos.precio,
-            autos.anio,
-            fotos_auto.foto AS foto
-        FROM 
-            autos
-        LEFT JOIN 
-            fotos_auto ON autos.idautos = fotos_auto.idautos
-        GROUP BY 
-            autos.idautos";
-        $result_autos = $conn->query($sql_autos);
+        <div class="container">
+            <div class="row">
+                <?php
+                // Consulta SQL para obtener los autos existentes junto con sus fotos
+                $sql_autos = "SELECT 
+                    autos.idautos,
+                    autos.idtipoconcesion,
+                    autos.iddueno,
+                    autos.matricula,
+                    autos.marca,
+                    autos.modelo,
+                    autos.precio,
+                    autos.anio,
+                    fotos_auto.foto AS foto
+                FROM 
+                    autos
+                LEFT JOIN 
+                    fotos_auto ON autos.idautos = fotos_auto.idautos
+                GROUP BY 
+                    autos.idautos";
+                $result_autos = $conn->query($sql_autos);
 
-        if ($result_autos && $result_autos->num_rows > 0) {
-            while ($row_auto = $result_autos->fetch_assoc()) {
-                echo "<li class='list-group-item d-flex justify-content-between align-items-center'>";
-                // Mostrar imagen del auto utilizando la ruta de la imagen almacenada en la base de datos
-                if (!empty($row_auto['foto'])) {
-                    echo "<img src='" . $row_auto['foto'] . "' alt='Imagen del auto' style='max-width: 100px;'>";
+                if ($result_autos && $result_autos->num_rows > 0) {
+                    while ($row_auto = $result_autos->fetch_assoc()) {
+                        echo "<div class='col-md-4 mb-4'>";
+                        echo "<div class='bg-white p-3'>";
+                        echo "<div class='list-group-item d-flex justify-content-between align-items-center'>";
+                        if (!empty($row_auto['foto'])) {
+                            echo "<img src='" . $row_auto['foto'] . "' alt='Imagen del auto' style='max-width: 100px;'>";
+                        } else {
+                            echo "<img src='default.jpg' alt='Imagen del auto' style='max-width: 100px;'>"; // Ruta de una imagen por defecto si no hay foto
+                        }
+
+                        echo "<div>";
+                        echo $row_auto["marca"] . " " . $row_auto["modelo"] . " (" . $row_auto["anio"] . ") - $" . $row_auto["precio"];
+                        echo "</div>";
+                        echo "<div>";
+                        echo "<form class='d-inline' method='post' action='eliminarauto.php'>";
+                        echo "<button type='submit' class='btn btn-danger btn-sm mr-2' onclick='return confirm(\"¿Estás seguro de que quieres eliminar este auto?\")'>Eliminar</button>";
+                        echo "<input type='hidden' name='idautos' value='" . $row_auto["idautos"] . "'>";
+                        echo "<input type='hidden' name='delete' value='true'>";
+                        echo "</form>";
+                        echo "<form class='d-inline' onsubmit='event.preventDefault(); actualizarAuto(" . $row_auto["idautos"] . ");'>";
+                        echo "<button type='submit' class='btn btn-primary btn-sm'>Actualizar</button> <";
+                        echo "</form>";
+                        echo "</div>";
+                        echo "</div>";
+                        echo "</div>";
+                        echo "</div>";
+                    }
                 } else {
-                    echo "<img src='default.jpg' alt='Imagen del auto' style='max-width: 100px;'>"; // Ruta de una imagen por defecto si no hay foto
+                    echo "<div class='col-12'><p>No se encontraron autos.</p></div>";
                 }
-
-                echo $row_auto["idautos"] . " " . $row_auto["marca"] . " " . $row_auto["modelo"] . " (" . $row_auto["anio"] . ") - $" . $row_auto["precio"];
-                echo "<div>";
-                // Agregamos los botones para eliminar y actualizar, pasando el ID del auto como parámetro
-                echo "<form class='d-inline' method='post' action='eliminarauto.php'>";
-                echo "<button type='submit' class='btn btn-danger btn-sm mr-2' onclick='return confirm(\"¿Estás seguro de que quieres eliminar este auto?\")'>Eliminar</button>";
-                echo "<input type='hidden' name='idautos' value='" . $row_auto["idautos"] . "'>";
-                echo "<input type='hidden' name='delete' value='true'>"; // Agregado para indicar que es una solicitud de eliminación
-                echo "</form>";
-                // Formulario para actualizar el auto
-                echo "<form class='d-inline' onsubmit='event.preventDefault(); actualizarAuto(" . $row_auto["idautos"] . ");'>";
-                echo "<button type='submit' class='btn btn-primary btn-sm'>Actualizar</button>";
-                echo "</form>";
-                echo "</div>";
-                echo "</li>";
-            }
-        } else {
-            echo "<li class='list-group-item'>No se encontraron autos.</li>";
-        }
-        ?>
-
-        </ul>
+                ?>
+            </div>
+        </div>
     </div>
     
-
     <!-- Agregando Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -187,33 +188,32 @@
         }
 
         function actualizarAuto(idAuto) {
-    // Obtener los datos del formulario
-    var formulario = document.querySelector('form[action="registrar_auto.php"]');
-    var formData = new FormData(formulario);
+            // Obtener los datos del formulario
+            var formulario = document.querySelector('form[action="registrar_auto.php"]');
+            var formData = new FormData(formulario);
 
-    // Agregar el ID del auto al FormData
-    formData.append('idautos', idAuto);
+            // Agregar el ID del auto al FormData
+            formData.append('idautos', idAuto);
 
-    // Enviar los datos mediante AJAX a actualizar_auto.php
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === XMLHttpRequest.DONE) {
-            if (xhr.status === 200) {
-                // Manejar la respuesta del servidor si es necesario
-                console.log(xhr.responseText);
-                // Recargar la página o realizar otra acción si es necesario
-                location.reload();
-            } else {
-                // Manejar errores si es necesario
-                console.error('Hubo un error al actualizar el auto.');
-            }
+            // Enviar los datos mediante AJAX a actualizar_auto.php
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // Manejar la respuesta del servidor si es necesario
+                        console.log(xhr.responseText);
+                        // Recargar la página o realizar otra acción si es necesario
+                        location.reload();
+                    } else {
+                        // Manejar errores si es necesario
+                        console.error('Hubo un error al actualizar el auto.');
+                    }
+                }
+            };
+
+            xhr.open('POST', 'actualizarauto.php');
+            xhr.send(formData);
         }
-    };
-
-    xhr.open('POST', 'actualizarauto.php');
-    xhr.send(formData);
-}
-
     </script>
 </body>
 </html>
