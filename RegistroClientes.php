@@ -130,6 +130,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['actualizar'])) {
 </head>
 
 <style>
+     .table-bordered tbody tr:hover {  
+            cursor: pointer;
+            background-color: #f5f5f5;
+            border: gray;
+            border: radius 1px;
+        }
+
+        .tablaClientes {
+            background-color: #e9ecef !important;
+        }
     
     
     

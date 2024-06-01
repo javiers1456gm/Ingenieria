@@ -10,8 +10,10 @@ if (!$conn) {
 // Obtener el término de búsqueda y validar
 $searchTerm = isset($_GET['search']) ? trim($_GET['search']) : '';
 if ($searchTerm === '') {
-    // Si el término de búsqueda está vacío, devolver un mensaje de error
-    die("Error: El término de búsqueda está vacío.");
+    // Si el término de búsqueda está vacío, devolver un array JSON vacío
+    header('Content-Type: application/json');
+    echo json_encode([]);
+    exit();
 }
 
 // Construir y ejecutar la consulta SQL utilizando una consulta preparada
