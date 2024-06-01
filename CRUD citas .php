@@ -1,25 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-<style>
- body {
-    background-image: url('fondo3.jpg'); /* Cambia 'ruta/a/tu/imagen.jpg' por la ruta de tu imagen */
-    background-size: cover; /* Asegura que la imagen cubra todo el fondo */
-    background-position: center; /* Centra la imagen */
-    background-repeat: no-repeat; /* Evita que la imagen se repita */
-    background-attachment: fixed; /* Hace que la imagen de fondo se mantenga fija al hacer scroll */
-    
-}
-
-
-
-</style>
-
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRUD de citas</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('fondo3.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .sidebar-icon {
+            position: fixed;
+            top: 7px;
+            right: 25px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #000;
+        }
+
+        .offcanvas {
+            background-image: url('fondo3.jpg'); /* Cambia 'fondo-barra.jpg' por la ruta de tu imagen de fondo */
+            background-size: cover;
+            background-position: center;
+            color: #fff; /* Texto blanco para mejor contraste */
+        }
+        .card {
+            background-color: rgba(255, 255, 255, 0.8); /* Fondo blanco semitransparente para las tarjetas */
+            color: #000; /* Texto negro */
+            border: 4px;
+        }
+    </style>
 </head>
 <body>
 <?php include 'navBar.php'; ?>
@@ -35,43 +50,36 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="cliente" style="color: white;" >Cliente:</label>
+                        <label for="cliente" style="color: white;">Cliente:</label>
                         <select class="form-control" id="cliente" name="cliente" required>
-                            <option value="" >Selecciona un cliente</option>
+                            <option value="">Selecciona un cliente</option>
                             <?php
-                            // Conexión a la base de datos (debes modificar estos valores según tu configuración)
                             $servername = "localhost";
                             $username = "root";
                             $password = "";
                             $dbname = "autoshop";
 
-                            // Crear conexión
                             $conn = new mysqli($servername, $username, $password, $dbname);
 
-                            // Verificar conexión
                             if ($conn->connect_error) {
                                 die("La conexión ha fallado: " . $conn->connect_error);
                             }
 
-                            // Consulta SQL para obtener los clientes de la base de datos
-                            $sql = "SELECT idClientes, nombre_cliente,apellido_paterno_cl,apellido_materno_cl FROM Clientes";
+                            $sql = "SELECT idClientes, nombre_cliente, apellido_paterno_cl, apellido_materno_cl FROM Clientes";
                             $result = $conn->query($sql);
 
-                            // Generar opciones para el combobox
                             if ($result->num_rows > 0) {
                                 while($row = $result->fetch_assoc()) {
                                     echo "<option value='" . $row["idClientes"] . "'>" . $row["nombre_cliente"] . " " . $row["apellido_paterno_cl"] . " " . $row["apellido_materno_cl"] . "</option>";
                                 }
                             }
 
-
-                            // Cerrar conexión
                             $conn->close();
                             ?>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="email" style="color: white;">Descripcion:</label>
+                        <label for="descripcion" style="color: white;">Descripcion:</label>
                         <input type="text" class="form-control" id="descripcion" name="descripcion" required placeholder="Ingrese una descripcion">
                     </div>
                     <div class="form-group">
@@ -83,106 +91,131 @@
                         <select class="form-control" id="vendedor" name="vendedor" required>
                             <option value="">Selecciona un vendedor</option>
                             <?php
-                            // Conexión a la base de datos (debes modificar estos valores según tu configuración)
                             $servername = "localhost";
                             $username = "root";
                             $password = "";
                             $dbname = "autoshop";
 
-                            // Crear conexión
                             $conn = new mysqli($servername, $username, $password, $dbname);
 
-                            // Verificar conexión
                             if ($conn->connect_error) {
                                 die("La conexión ha fallado: " . $conn->connect_error);
                             }
 
-                            // Consulta SQL para obtener los vendedores de la base de datos
                             $sql = "SELECT idUsuarios, nombre_vendedor FROM Usuarios";
                             $result = $conn->query($sql);
 
-                            // Generar opciones para el combobox
                             if ($result->num_rows > 0) {
                                 while($row = $result->fetch_assoc()) {
                                     echo "<option value='" . $row["idUsuarios"] . "'>" . $row["nombre_vendedor"] . "</option>";
                                 }
                             }
 
-                            // Cerrar conexión
                             $conn->close();
                             ?>
                         </select>
                     </div>
-                    <!-- Campo oculto para almacenar la fecha seleccionada -->
                     <input type="hidden" id="fecha" name="fecha" value="">
                     <div class="form-group">
                         <button type="submit" class="btn btn-dark">Guardar</button>
                         <button type="button" class="btn btn-dark" onclick="actualizarCita();">Actualizar</button>
                         <button type="button" class="btn btn-dark" onclick="eliminarCita();">Borrar</button>
-                        <!-- Campo oculto para indicar la eliminación -->
                         <input type="hidden" name="delete">
-                        
                     </div>
-                    
                 </form>
             </div>
             <div class="col-md-6">
-                <br>
-                <br>    
+                <br><br>
                 <div class="container right">
-                <?php include 'calendario.php'; ?>   
-                <div class="row">
-                        <div class="col-md-8"></div>
-                        <div class="col-md-4">
-                            <!-- Contenedor en la parte derecha -->
-                            
-                         
-                        </div>
-                    </div>
+                    <?php include 'calendario.php'; ?>
                 </div>
             </div>
         </div>
     </div>
+    <i class="bi bi-list sidebar-icon" data-bs-toggle="offcanvas" data-bs-target="#citasOffcanvas" aria-controls="citasOffcanvas"></i>
 
-    <!-- Script para seleccionar la fecha y mostrar/ocultar el campo de ID de cita -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="citasOffcanvas" aria-labelledby="citasOffcanvasLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="citasOffcanvasLabel">Citas</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <input type="text" id="filtroCitas" class="form-control mb-3" placeholder="Buscar por cliente o vendedor...">
+        <div id="listaCitas">
+            <?php
+            $servername = "localhost";
+            $username = "root";
+            $password = "";
+            $dbname = "autoshop";
+
+            $conn = new mysqli($servername, $username, $password, $dbname);
+
+            if ($conn->connect_error) {
+                die("La conexión ha fallado: " . $conn->connect_error);
+            }
+
+            $sql = "SELECT c.idCitas, c.descripcion, c.hora, cl.nombre_cliente, cl.apellido_paterno_cl, cl.apellido_materno_cl, u.nombre_vendedor
+                    FROM Citas c
+                    JOIN Clientes cl ON c.idClientes = cl.idClientes
+                    JOIN Usuarios u ON c.idUsuarios = u.idUsuarios
+                    ORDER BY c.hora";
+            $result = $conn->query($sql);
+
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    echo "<div class='card mb-3 cita-item'>";
+                    echo "<div class='card-body'>";
+                    echo "<h5 class='card-title'>" . $row["nombre_cliente"] . " " . $row["apellido_paterno_cl"] . " " . $row["apellido_materno_cl"] . "</h5>";
+                    echo "<p class='card-text'>" . $row["descripcion"] . "</p>";
+                    echo "<p class='card-text'><small class='text-muted'> " . $row["hora"] . "</small></p>";
+                    echo "<p class='card-text'><small class='text-muted'>Vendedor: " . $row["nombre_vendedor"] . "</small></p>";
+                    echo "<button class='btn btn-primary btn-atender' onclick='atenderCita(" . $row["idCitas"] . ")'>Atender</button>";
+                    echo "</div>";
+                    echo "</div>";
+                }
+
+            } else {
+                echo "<p>No hay citas programadas.</p>";
+            }
+
+            $conn->close();
+            ?>
+        </div>
+    </div>
+</div>
+
+
     <script>
-        function selectDay(dayElement) {
-            // Elimina la clase 'selected' de todos los días
+         function atenderCita(idCita) {
+        // Redirigir al usuario a buscarAuto.php con el ID de la cita como parámetro
+        window.location.href = "buscarAuto.php?idCita=" + idCita;
+    }
+       
+       function selectDay(dayElement) {
             var allDays = document.querySelectorAll('.calendar-day');
             allDays.forEach(function(day) {
                 day.classList.remove('selected');
             });
 
-            // Agrega la clase 'selected' al día clickeado
             dayElement.parentNode.classList.add('selected');
 
-            // Obtener la fecha actual
             var today = new Date();
             var year = today.getFullYear();
-            var month = today.getMonth() + 1; // El mes se indexa desde 0, entonces sumamos 1
-            var day = parseInt(dayElement.textContent.trim()); // Obtener el día del calendario
+            var month = today.getMonth() + 1;
+            var day = parseInt(dayElement.textContent.trim());
 
-            // Formatear la fecha en el formato YYYY-MM-DD
             var selectedDate = year + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day);
 
-            // Actualiza el valor del campo oculto 'fecha'
             document.getElementById('fecha').value = selectedDate;
 
-            // Imprime la fecha seleccionada en la consola para verificar
             console.log("Fecha seleccionada:", selectedDate);
         }
 
         function eliminarCita() {
-            // Obtener el nombre del cliente
             var cliente = document.getElementById("cliente").value;
-
-            // Establecer el valor del campo oculto "delete"
             document.querySelector("input[name='delete']").value = "true";
-
-            // Obtener el valor del campo "delete"
             var deleteValue = document.querySelector("input[name='delete']").value;
 
-            // Enviar los datos al script PHP para eliminar la cita de la base de datos
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "EliminarCitas.php", true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -193,12 +226,12 @@
                     } else {
                         alert("Error al eliminar el registro:\n" + xhr.responseText);
                     }
-                    // Aquí puedes agregar cualquier lógica adicional después de eliminar la cita
                 }
             };
-            xhr.send("cliente=" + cliente + "&delete=" + deleteValue); // Agregar el parámetro delete
+            xhr.send("cliente=" + cliente + "&delete=" + deleteValue);
             limpiarCampos();
         }
+
         function limpiarCampos() {
             document.getElementById("cliente").value = "";
             document.getElementById("descripcion").value = "";
@@ -206,17 +239,13 @@
             document.getElementById("vendedor").value = "";
             document.getElementById("fecha").value = "";
         }
-    </script>
-    <!-- Script para enviar los datos del formulario mediante AJAX -->
-    <script>
+
         document.addEventListener("DOMContentLoaded", function() {
             document.getElementById("citaForm").addEventListener("submit", function(event) {
-                event.preventDefault(); // Evita que el formulario se envíe de forma convencional
+                event.preventDefault();
 
-                // Obtener los datos del formulario
                 var formData = new FormData(this);
 
-                // Enviar los datos del formulario mediante AJAX
                 var xhr = new XMLHttpRequest();
                 xhr.open("POST", "insertarCitas.php", true);
                 xhr.onload = function() {
@@ -231,21 +260,27 @@
                 };
                 xhr.send(formData);
             });
+
+            document.getElementById('filtroCitas').addEventListener('input', function() {
+                var filterValue = this.value.toLowerCase();
+                var citas = document.querySelectorAll('.cita-item');
+
+                citas.forEach(function(cita) {
+                    var textoCita = cita.textContent.toLowerCase();
+                    if (textoCita.includes(filterValue)) {
+                        cita.style.display = '';
+                    } else {
+                        cita.style.display = 'none';
+                    }
+                });
+            });
         });
-    </script>
-    <!-- Script para enviar la actualización de la cita mediante AJAX -->
-    <script>
+
         function actualizarCita() {
-            // Obtener el valor del cliente
             var cliente = document.getElementById("cliente").value;
-
-            // Obtener los datos del formulario
             var formData = new FormData(document.getElementById("citaForm"));
-
-            // Enviar el valor del cliente junto con los demás datos del formulario mediante AJAX
             formData.append("cliente", cliente);
 
-            // Enviar los datos del formulario mediante AJAX
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "ActualizarCitas.php", true);
             xhr.onload = function() {
@@ -261,5 +296,6 @@
             limpiarCampos();
         }
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -7,29 +7,40 @@ if (!$conn) {
     die("La conexión a la base de datos ha fallado: " . mysqli_connect_error());
 }
 
-// Obtener los parámetros de búsqueda
-$nombre = isset($_GET['nombre']) ? $_GET['nombre'] : '';
-$correo = isset($_GET['correo_electronico']) ? $_GET['correo_electronico'] : '';
-
-// Construir la consulta SQL
-$query = "SELECT * FROM clientes WHERE 1=1";
-if (!empty($nombre)) {
-    $query .= " AND nombre_cliente LIKE '%" . mysqli_real_escape_string($conn, $nombre) . "%'";
-}
-if (!empty($correo)) {
-    $query .= " AND correo_electronico LIKE '%" . mysqli_real_escape_string($conn, $correo) . "%'";
+// Obtener el término de búsqueda y validar
+$searchTerm = isset($_GET['search']) ? trim($_GET['search']) : '';
+if ($searchTerm === '') {
+    // Si el término de búsqueda está vacío, devolver un mensaje de error
+    die("Error: El término de búsqueda está vacío.");
 }
 
-$result = mysqli_query($conn, $query);
+// Construir y ejecutar la consulta SQL utilizando una consulta preparada
+$query = "SELECT idClientes, nombre_cliente FROM Clientes WHERE nombre_cliente LIKE ?";
+$stmt = mysqli_prepare($conn, $query);
+if ($stmt) {
+    // Asociar el parámetro de búsqueda con la consulta preparada
+    $searchTerm = "%" . mysqli_real_escape_string($conn, $searchTerm) . "%";
+    mysqli_stmt_bind_param($stmt, "s", $searchTerm);
 
-$clientes = [];
-while ($row = mysqli_fetch_assoc($result)) {
-    $clientes[] = $row;
+    // Ejecutar la consulta preparada
+    mysqli_stmt_execute($stmt);
+
+    // Obtener los resultados de la consulta
+    $result = mysqli_stmt_get_result($stmt);
+
+    // Construir el array de clientes
+    $clientes = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $clientes[] = $row;
+    }
+
+    // Devolver los resultados en formato JSON
+    header('Content-Type: application/json');
+    echo json_encode($clientes);
+} else {
+    // Si la consulta preparada falla, devolver un mensaje de error
+    die("Error en la consulta SQL: " . mysqli_error($conn));
 }
-
-// Devolver los resultados en formato JSON
-header('Content-Type: application/json');
-echo json_encode($clientes);
 
 // Cerrar la conexión a la base de datos
 mysqli_close($conn);
